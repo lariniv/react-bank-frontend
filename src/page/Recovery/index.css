@@ -1,0 +1,64 @@
+.recovery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 393px;
+  width: 100%;
+  height: fit-content;
+  height: 852px;
+  border: 1px solid #000;
+  border-radius: 24px;
+}
+.signup-link {
+  color: var(--primary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.heading__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #121212;
+}
+
+.heading__text {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.alert {
+  background-color: rgba(242, 136, 61, 0.1);
+  padding: 16px;
+  font-size: 14px;
+  color: #f2883d;
+  text-align: center;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.alert__icon {
+  background-image: url("../../img/danger-icon.svg");
+  width: 16px;
+  height: 16px;
+  background-position: center center;
+  background-repeat: no-repeat;
+}

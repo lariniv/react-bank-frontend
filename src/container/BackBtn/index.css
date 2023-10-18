@@ -1,0 +1,14 @@
+.back-button {
+  background-image: url("../../img/back-button.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 22px;
+  height: 22px;
+
+  transition: opacity 0.7s;
+}
+
+.back-button:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}

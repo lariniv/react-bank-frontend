@@ -1,0 +1,72 @@
+.form__password {
+  width: 20px;
+  height: 20px;
+  top: calc(50% - 10px);
+  right: 20px;
+  position: absolute;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  transition: opacity 0.7s;
+}
+
+.form__password--show {
+  background-image: url("../../img/password-show.svg");
+}
+
+.form__password--show-red {
+  background-image: url("../../img/password-show-red.svg");
+}
+
+.form__password--hide {
+  background-image: url("../../img/password-hide.svg");
+}
+
+.form__password--hide-red {
+  background-image: url("../../img/password-hide-red.svg");
+}
+
+.form__password:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.form__input-wrapper {
+  position: relative;
+}
+
+.form__block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form__label {
+  font-size: 14px;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.form__input {
+  background-color: #fff;
+  width: 100%;
+  padding: 20px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+}
+
+.form__block--error {
+  color: var(--red);
+}
+
+.form__block--error .form__input {
+  border: 1px solid var(--red);
+}
+
+.form__block--error .form__input::placeholder {
+  color: var(--red);
+}
+
+.form__input:focus {
+  border: 1px solid var(--primary);
+}
