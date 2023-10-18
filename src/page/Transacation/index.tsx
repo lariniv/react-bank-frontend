@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackBtn from "../../container/BackBtn";
 import { TransactionsObject } from "../../types/TransactionObject";
+import { config } from "dotenv";
 import "./index.css";
+
+config();
 
 const Transaction = () => {
   const [transaction, setTransaction] = useState<TransactionsObject>();
@@ -29,7 +32,7 @@ const Transaction = () => {
   const fetchData = async () => {
     try {
       const res = await fetch(
-        `http://localhost:4000/transaction?token=${token}&id=${id}`,
+        `${process.env.DOMAIN}/transaction?token=${token}&id=${id}`,
         { method: "GET" }
       );
 

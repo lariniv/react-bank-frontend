@@ -6,6 +6,8 @@ import Input from "../../container/Input";
 import { useAuth } from "../../types/AuthContext";
 import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
+import { config } from "dotenv";
+config();
 
 const SignUpConfirm = () => {
   const [code, setCode] = useState<string>("");
@@ -21,7 +23,7 @@ const SignUpConfirm = () => {
 
   const fetchData = async (email: string) => {
     try {
-      const response = await fetch("http://localhost:4000/signup-confirm", {
+      const response = await fetch(`${process.env.DOMAIN}/signup-confirm`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -76,7 +78,7 @@ const SignUpConfirm = () => {
           message: "",
         });
         const response = await fetch(
-          "http://localhost:4000/signup-confirm-code",
+          `${process.env.DOMAIN}/signup-confirm-code`,
           {
             method: "POST",
             headers: {

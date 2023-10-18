@@ -5,6 +5,8 @@ import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../types/AuthContext";
+import { config } from "dotenv";
+config();
 
 const Receive = () => {
   const [sum, setSum] = useState<string>("");
@@ -54,7 +56,7 @@ const Receive = () => {
     });
 
     try {
-      const res = await fetch("http://localhost:4000/receive", {
+      const res = await fetch(`${process.env.DOMAIN}receive`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -88,7 +90,7 @@ const Receive = () => {
     });
 
     try {
-      const res = await fetch("http://localhost:4000/receive", {
+      const res = await fetch(`${process.env.DOMAIN}/receive`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

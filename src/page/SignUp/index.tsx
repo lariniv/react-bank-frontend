@@ -7,6 +7,8 @@ import { REG_EXP } from "../../shared/RegExp";
 import { useAuth } from "../../types/AuthContext";
 import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
+import { config } from "dotenv";
+config();
 
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
@@ -60,7 +62,7 @@ const SignUp = () => {
     try {
       if (emailErr.result && passwordErr.result) {
         console.log("About to fetch");
-        const res = await fetch("http://localhost:4000/signup", {
+        const res = await fetch(`${process.env.DOMAIN}/signup`, {
           method: "POST",
           headers: {
             "content-type": "application/json",

@@ -7,6 +7,8 @@ import "./index.css";
 import Button from "../../container/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../types/AuthContext";
+import {config} from "dotenv"
+config()
 
 const Send = () => {
   const [email, setEmail] = useState<string>("");
@@ -78,7 +80,7 @@ const Send = () => {
 
     try {
       if (emailErr.result && sumErr.result) {
-        const res = await fetch("http://localhost:4000/send", {
+        const res = await fetch(`${process.env.DOMAIN}/send`, {
           method: "POST",
           headers: {
             "content-type": "application/json",

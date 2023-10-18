@@ -7,6 +7,8 @@ import { ErrorObject } from "../../types/ErrorObject";
 import { REG_EXP } from "../../shared/RegExp";
 import "./index.css";
 import { useAuth } from "../../types/AuthContext";
+import {config} from "dotenv"
+config()
 
 const Recovery = () => {
   const [email, setEmail] = useState<string>("");
@@ -39,7 +41,7 @@ const Recovery = () => {
 
     try {
       if (emailErr.result) {
-        const res = await fetch("http://localhost:4000/recovery", {
+        const res = await fetch(`${process.env.DOMAIN}/recovery`, {
           method: "POST",
           headers: {
             "content-type": "application/json",

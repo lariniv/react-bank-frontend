@@ -4,6 +4,8 @@ import getHoursAndMinute from "../../shared/GetHoursAndMinute";
 import { useAuth } from "../../types/AuthContext";
 import { TransactionsObject } from "../../types/TransactionObject";
 import "./index.css";
+import { config } from "dotenv";
+config();
 
 const Balance = () => {
   const { state } = useAuth();
@@ -14,7 +16,7 @@ const Balance = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:4000/balance", {
+      const res = await fetch(`${process.env.DOMAIN}/balance`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

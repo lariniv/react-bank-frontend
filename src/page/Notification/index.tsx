@@ -4,6 +4,8 @@ import getDate from "../../shared/GetDate";
 import { useAuth } from "../../types/AuthContext";
 import { NotificationObject } from "../../types/NotificationObject";
 import "./index.css";
+import {config} from "dotenv"
+config()
 
 const Notification = () => {
   const [notification, setNotification] = useState<Array<NotificationObject>>(
@@ -13,7 +15,7 @@ const Notification = () => {
   const { state } = useAuth();
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:4000/notification", {
+      const res = await fetch(`${process.env.DOMAIN}/notification`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

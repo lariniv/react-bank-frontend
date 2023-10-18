@@ -7,6 +7,8 @@ import { ErrorObject } from "../../types/ErrorObject";
 import { REG_EXP } from "../../shared/RegExp";
 import "./index.css";
 import { useAuth } from "../../types/AuthContext";
+import { config } from "dotenv";
+config();
 
 const RecoveryConfirm = () => {
   const [code, setCode] = useState<string>("");
@@ -62,7 +64,7 @@ const RecoveryConfirm = () => {
 
     try {
       if (checkCodeValidity && checkPasswordValidity) {
-        const res = await fetch("http://localhost:4000/recovery-confirm", {
+        const res = await fetch(`${process.env.DOMAIN}/recovery-confirm`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
