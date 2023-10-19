@@ -7,9 +7,7 @@ import "./index.css";
 import { useAuth } from "../../types/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { REG_EXP } from "../../shared/RegExp";
-import {config} from "dotenv"
-config()
-
+import DOMAIN from "../../shared/Domain";
 const Settings = () => {
   const [email, setEmail] = useState<string>("");
   const [emailPassword, setEmailPassword] = useState<string>("");
@@ -85,8 +83,7 @@ const Settings = () => {
     try {
       if (emailPasswordErr.result && emailErr.result) {
         if (emailPassword === state.user.password) {
-          console.log("Fetching");
-          const res = await fetch(`${process.env.DOMAIN}/settings-email`, {
+          const res = await fetch(`${DOMAIN}/settings-email`, {
             method: "POST",
             headers: {
               "content-type": "application/json",
@@ -146,7 +143,7 @@ const Settings = () => {
     try {
       if (newPasswordErr.result && oldPasswordErr.result) {
         if (oldPassword === state.user.password) {
-          const res = await fetch(`${process.env.DOMAIN}/settings-password`, {
+          const res = await fetch(`${DOMAIN}/settings-password`, {
             method: "POST",
             headers: {
               "content-type": "application/json",

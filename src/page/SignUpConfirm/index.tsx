@@ -6,9 +6,7 @@ import Input from "../../container/Input";
 import { useAuth } from "../../types/AuthContext";
 import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
-import { config } from "dotenv";
-config();
-
+import DOMAIN from "../../shared/Domain";
 const SignUpConfirm = () => {
   const [code, setCode] = useState<string>("");
   const [alert, setAlert] = useState<string>("");
@@ -23,7 +21,7 @@ const SignUpConfirm = () => {
 
   const fetchData = async (email: string) => {
     try {
-      const response = await fetch(`${process.env.DOMAIN}/signup-confirm`, {
+      const response = await fetch(`${DOMAIN}/signup-confirm`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -77,20 +75,17 @@ const SignUpConfirm = () => {
           result: true,
           message: "",
         });
-        const response = await fetch(
-          `${process.env.DOMAIN}/signup-confirm-code`,
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              isConfirm: true,
-              email: state.user.email,
-              token: state.token,
-            }),
-          }
-        );
+        const response = await fetch(`${DOMAIN}/signup-confirm-code`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            isConfirm: true,
+            email: state.user.email,
+            token: state.token,
+          }),
+        });
 
         const data = await response.json();
 
@@ -108,8 +103,6 @@ const SignUpConfirm = () => {
         setAlert(err.message);
       }
     }
-
-    console.log(Number(code), checkCodeValidity, res);
   };
 
   return (

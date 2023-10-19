@@ -4,9 +4,7 @@ import getDate from "../../shared/GetDate";
 import { useAuth } from "../../types/AuthContext";
 import { NotificationObject } from "../../types/NotificationObject";
 import "./index.css";
-import {config} from "dotenv"
-config()
-
+import DOMAIN from "../../shared/Domain";
 const Notification = () => {
   const [notification, setNotification] = useState<Array<NotificationObject>>(
     []
@@ -15,7 +13,7 @@ const Notification = () => {
   const { state } = useAuth();
   const fetchData = async () => {
     try {
-      const res = await fetch(`${process.env.DOMAIN}/notification`, {
+      const res = await fetch(`${DOMAIN}/notification`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -26,7 +24,6 @@ const Notification = () => {
       const data = await res.json();
 
       if (res.ok) {
-        console.log(data.notificationList);
         setNotification(data.notificationList);
       } else {
         console.log(data.message);
@@ -37,7 +34,6 @@ const Notification = () => {
   };
   useEffect(() => {
     fetchData();
-    console.log(notification);
   }, []);
   return (
     <div className="settings">

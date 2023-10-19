@@ -5,9 +5,7 @@ import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../types/AuthContext";
-import { config } from "dotenv";
-config();
-
+import DOMAIN from "../../shared/Domain";
 const Receive = () => {
   const [sum, setSum] = useState<string>("");
   const [alert, setAlert] = useState<string>("");
@@ -56,7 +54,7 @@ const Receive = () => {
     });
 
     try {
-      const res = await fetch(`${process.env.DOMAIN}receive`, {
+      const res = await fetch(`${DOMAIN}receive`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -90,7 +88,7 @@ const Receive = () => {
     });
 
     try {
-      const res = await fetch(`${process.env.DOMAIN}/receive`, {
+      const res = await fetch(`${DOMAIN}/receive`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

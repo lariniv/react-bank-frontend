@@ -2,17 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackBtn from "../../container/BackBtn";
 import { TransactionsObject } from "../../types/TransactionObject";
-import { config } from "dotenv";
+import DOMAIN from "../../shared/Domain";
 import "./index.css";
-
-config();
 
 const Transaction = () => {
   const [transaction, setTransaction] = useState<TransactionsObject>();
 
   const { id, token } = useParams();
-
-  console.log(id, token);
 
   const getDate = (date: Date) => {
     const newDate = new Date(date);
@@ -31,10 +27,9 @@ const Transaction = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(
-        `${process.env.DOMAIN}/transaction?token=${token}&id=${id}`,
-        { method: "GET" }
-      );
+      const res = await fetch(`${DOMAIN}/transaction?token=${token}&id=${id}`, {
+        method: "GET",
+      });
 
       const data = await res.json();
 
@@ -49,7 +44,6 @@ const Transaction = () => {
   };
 
   useEffect(() => {
-    console.log(transaction);
     fetchData();
   }, []);
   return (

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import DOMAIN from "../../shared/Domain";
 import getHoursAndMinute from "../../shared/GetHoursAndMinute";
 import { useAuth } from "../../types/AuthContext";
 import { TransactionsObject } from "../../types/TransactionObject";
 import "./index.css";
-import { config } from "dotenv";
-config();
 
 const Balance = () => {
   const { state } = useAuth();
@@ -16,7 +15,7 @@ const Balance = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`${process.env.DOMAIN}/balance`, {
+      const res = await fetch(`${DOMAIN}/balance`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
