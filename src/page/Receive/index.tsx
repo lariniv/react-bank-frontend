@@ -54,7 +54,7 @@ const Receive = () => {
     });
 
     try {
-      const res = await fetch(`${DOMAIN}receive`, {
+      const res = await fetch(`${DOMAIN}/receive`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
