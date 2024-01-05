@@ -1,21 +1,21 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AuthRoute from "./component/AuthRoute";
 import { AuthProvider } from "./types/AuthContext";
+import AuthRoute from "./component/AuthRoute";
 import PrivateRoute from "./component/PrivateRoute";
 
 import {
-  WelcomePage,
-  SignIn,
-  SignUp,
-  SignUpConfirm,
   Balance,
-  Transaction,
+  Notification,
   Receive,
   Recovery,
   RecoveryConfirm,
   Send,
   Settings,
-  Notification,
+  SignIn,
+  SignUp,
+  SignUpConfirm,
+  Transaction,
+  WelcomePage,
 } from "./page";
 
 function App() {
