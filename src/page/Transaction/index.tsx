@@ -5,7 +5,7 @@ import { TransactionsObject } from "../../types/TransactionObject";
 import DOMAIN from "../../shared/Domain";
 import "./index.css";
 
-const Transaction = () => {
+export default function Transaction() {
   const [transaction, setTransaction] = useState<TransactionsObject>();
 
   const { id, token } = useParams();
@@ -103,6 +103,4 @@ const Transaction = () => {
       </main>
     </div>
   );
-};
-
-export default Transaction;
+}

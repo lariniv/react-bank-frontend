@@ -1,20 +1,22 @@
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AuthRoute from "./component/AuthRoute";
 import { AuthProvider } from "./types/AuthContext";
-import WelcomePage from "./page/WelcomePage";
-import SignUp from "./page/SignUp";
 import PrivateRoute from "./component/PrivateRoute";
-import SignUpConfirm from "./page/SignUpConfirm";
-import SignIn from "./page/SignIn";
-import Recovery from "./page/Recovery";
-import RecoveryConfirm from "./page/RecoveryConfirm";
-import Balance from "./page/Balance";
-import Settings from "./page/Settings";
-import Send from "./page/Send";
-import Receive from "./page/Receive";
-import Notification from "./page/Notification";
-import Transaction from "./page/Transacation";
+
+import {
+  WelcomePage,
+  SignIn,
+  SignUp,
+  SignUpConfirm,
+  Balance,
+  Transaction,
+  Receive,
+  Recovery,
+  RecoveryConfirm,
+  Send,
+  Settings,
+  Notification,
+} from "./page";
 
 function App() {
   return (

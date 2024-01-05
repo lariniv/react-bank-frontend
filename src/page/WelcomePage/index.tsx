@@ -4,7 +4,7 @@ import Storage from "../../img/storage.png";
 
 import "./index.css";
 
-const WelcomePage = () => {
+export default function WelcomePage() {
   return (
     <div className="main-page">
       <div className="hero" style={{ backgroundImage: `url(${BgImage})` }}>
@@ -22,6 +22,4 @@ const WelcomePage = () => {
       </div>
     </div>
   );
-};
-
-export default WelcomePage;
+}
