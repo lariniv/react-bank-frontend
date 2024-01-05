@@ -13,32 +13,31 @@ const Balance = () => {
     []
   );
 
-  const fetchData = async () => {
-    try {
-      const res = await fetch(`${DOMAIN}/balance`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ token: state.token }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setBalance(data.balance);
-        setTransactions(data.transactionsList);
-      } else {
-        console.log(data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${DOMAIN}/balance`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ token: state.token }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setBalance(data.balance);
+          setTransactions(data.transactionsList);
+        } else {
+          console.log(data.message);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchData();
-  }, []);
+  }, [state.token]);
 
   return (
     <div className="balance">
