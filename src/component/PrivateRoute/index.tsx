@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { useAuth } from "../../types/AuthContext";
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const nav = useNavigate();
   const { state } = useAuth();
   let result = true;

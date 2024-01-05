@@ -5,22 +5,28 @@ import Button from "../../container/Button";
 import Input from "../../container/Input";
 import { REG_EXP } from "../../shared/RegExp";
 import { useAuth } from "../../types/AuthContext";
-import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
 import DOMAIN from "../../shared/Domain";
+
 const SignIn = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [formData, setFormData] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
+
+  const [formError, setFormError] = useState<{
+    emailError: string | null;
+    passwordError: string | null;
+  }>({
+    emailError: null,
+    passwordError: null,
+  });
+
   const [alert, setAlert] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [emailErr, setEmailErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
-  const [passwordErr, setPasswordErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
 
   const navigation = useNavigate();
 
@@ -30,15 +36,15 @@ const SignIn = () => {
     if (!state.user.isConfirm && state.token) {
       navigation("/signup-confirm");
     }
-  }, [state.user.isConfirm, state.token]);
+  }, [state.user.isConfirm, state.token, navigation]);
 
   const checkEmailValidity = useMemo(() => {
-    return REG_EXP.EMAIL.test(email);
-  }, [email]);
+    return REG_EXP.EMAIL.test(formData.email as string);
+  }, [formData.email]);
 
   const checkPasswordValidity = useMemo(() => {
-    return REG_EXP.PASSWORD.test(password);
-  }, [password]);
+    return REG_EXP.PASSWORD.test(formData.password as string);
+  }, [formData.password]);
 
   useEffect(() => {
     if (checkPasswordValidity || checkEmailValidity) {
@@ -47,42 +53,37 @@ const SignIn = () => {
   }, [checkPasswordValidity, checkEmailValidity]);
 
   const handleSubmit = async () => {
-    if (password.length < 8) {
-      setPasswordErr({ result: false, message: "Enter valid password" });
-    } else {
-      setPasswordErr({
-        result: checkPasswordValidity,
-        message: checkPasswordValidity ? "" : "Enter valid password",
-      });
+    const { password, email } = formData;
+
+    if ((password as string).length < 8) {
+      setFormError((prev) => ({
+        ...prev,
+        passwordError: "Enter valid password",
+      }));
     }
 
-    setEmailErr({
-      result: checkEmailValidity,
-      message: checkEmailValidity ? "" : "Enter proper email",
+    setFormError({
+      emailError: checkEmailValidity ? null : "Enter proper email",
+      passwordError: checkPasswordValidity ? null : "Enter valid password",
     });
 
     try {
-      if (emailErr.result && passwordErr.result) {
+      if (formError.emailError && formError.passwordError) {
         const res = await fetch(`${DOMAIN}/signin`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
           },
-          body: JSON.stringify({ email: email, password: password }),
+          body: JSON.stringify({ email, password }),
         });
 
         const data = await res.json();
 
         if (res.ok) {
           dispatch({ type: "LOGIN", ...data.userData });
-          setPasswordErr({
-            result: true,
-            message: "",
-          });
-
-          setEmailErr({
-            result: true,
-            message: "",
+          setFormError({
+            emailError: null,
+            passwordError: null,
           });
 
           setAlert("");
@@ -117,33 +118,41 @@ const SignIn = () => {
           <p className="heading__text">Select login method</p>
         </div>
 
-        <Input
-          type="email"
-          name="Email"
-          value={email}
-          setValue={setEmail}
-          error={emailErr}
-        />
-        <Input
-          type="password"
-          name="Password"
-          isPassword
-          value={password}
-          setValue={setPassword}
-          error={passwordErr}
-        />
-        <div>
-          Forgot your password?{" "}
-          <Link to="/recovery" className="signup-link">
-            Restore
-          </Link>
-        </div>
-        <Button
-          text="Continue"
-          type="submit"
-          disabled={isDisabled}
-          action={() => handleSubmit()}
-        />
+        <form className="container">
+          <Input
+            type="email"
+            name="Email"
+            value={formData.email as string}
+            setValue={(newValue) =>
+              setFormData((prev) => ({ ...prev, email: newValue }))
+            }
+            error={formError.emailError}
+          />
+          <Input
+            type="password"
+            name="Password"
+            isPassword
+            value={formData.password as string}
+            setValue={(newValue) =>
+              setFormData((prev) => ({ ...prev, password: newValue }))
+            }
+            error={formError.passwordError}
+          />
+
+          <div>
+            Forgot your password?{" "}
+            <Link to="/recovery" className="signup-link">
+              Restore
+            </Link>
+          </div>
+
+          <Button
+            text="Continue"
+            type="submit"
+            disabled={isDisabled}
+            action={() => handleSubmit()}
+          />
+        </form>
 
         {!!alert && (
           <div className="alert">

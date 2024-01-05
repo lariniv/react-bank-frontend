@@ -1,15 +1,21 @@
 import { useState } from "react";
 import "./index.css";
-import { ErrorObject } from "../../types/ErrorObject";
 
-const Input: React.FC<{
+const Input = ({
+  name,
+  type,
+  isPassword,
+  value,
+  setValue,
+  error,
+}: {
   name: string;
   type: string;
   isPassword?: boolean;
   value: string;
   setValue: (newValue: string) => void;
-  error: ErrorObject;
-}> = ({ name, isPassword, value, setValue, error, type }) => {
+  error: string | null;
+}) => {
   const [hide, setHide] = useState<boolean>(true);
 
   let placeholder;
@@ -29,20 +35,19 @@ const Input: React.FC<{
       handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const elem = e.target as HTMLElement;
         const classList = elem.classList;
-        if (error.result) {
+        if (error) {
           classList.toggle("form__password--show");
           classList.toggle("form__password--hide");
-        } else if (!error.result) {
+        } else if (!error) {
           classList.toggle("form__password--show-red");
           classList.toggle("form__password--hide-red");
         }
-
         setHide(!hide);
       };
       break;
   }
   return (
-    <div className={`form__block ${!error.result ? "form__block--error" : ""}`}>
+    <div className={`form__block ${error ? "form__block--error" : ""}`}>
       <label htmlFor={name.toLowerCase()} className="form__label">
         {name}
       </label>
@@ -60,13 +65,13 @@ const Input: React.FC<{
         {isPassword && (
           <div
             className={`form__password ${
-              error.result ? "form__password--show" : "form__password--show-red"
+              !error ? "form__password--show" : "form__password--show-red"
             } `}
             onClick={(e) => handleClick(e)}
           />
         )}
       </div>
-      {!error.result && <div className="form__error">{error.message}</div>}
+      {error && <div className="form__error">{error}</div>}
     </div>
   );
 };

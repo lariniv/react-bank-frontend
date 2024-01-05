@@ -4,17 +4,15 @@ import BackBtn from "../../container/BackBtn";
 import Button from "../../container/Button";
 import Input from "../../container/Input";
 import { useAuth } from "../../types/AuthContext";
-import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
 import DOMAIN from "../../shared/Domain";
+
 const SignUpConfirm = () => {
   const [code, setCode] = useState<string>("");
   const [alert, setAlert] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [codeErr, setCodeErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
+  const [codeErr, setCodeErr] = useState<string | null>(null);
+
   const [res, setRes] = useState<number>(0);
 
   const { state, dispatch } = useAuth();
@@ -71,10 +69,7 @@ const SignUpConfirm = () => {
   const handleSubmit = async () => {
     try {
       if (checkCodeValidity && Number(code) === res) {
-        setCodeErr({
-          result: true,
-          message: "",
-        });
+        setCodeErr(null);
         const response = await fetch(`${DOMAIN}/signup-confirm-code`, {
           method: "POST",
           headers: {
@@ -96,7 +91,7 @@ const SignUpConfirm = () => {
           setAlert(data.message);
         }
       } else {
-        setCodeErr({ result: false, message: "Enter valid code" });
+        setCodeErr("Enter valid code");
       }
     } catch (err: any) {
       if (err.message) {
@@ -117,21 +112,23 @@ const SignUpConfirm = () => {
           <p className="heading__text">Write the code you received</p>
         </div>
 
-        <Input
-          name="Code"
-          value={code}
-          setValue={setCode}
-          error={codeErr}
-          type="code"
-        />
+        <form className="container">
+          <Input
+            name="Code"
+            value={code}
+            setValue={setCode}
+            error={codeErr}
+            type="code"
+          />
 
-        <Button
-          text="Confirm"
-          href="/signup-confirm"
-          type="submit"
-          disabled={isDisabled}
-          action={() => handleSubmit()}
-        />
+          <Button
+            text="Confirm"
+            href="/signup-confirm"
+            type="submit"
+            disabled={isDisabled}
+            action={() => handleSubmit()}
+          />
+        </form>
 
         {!!alert && (
           <div className="alert">

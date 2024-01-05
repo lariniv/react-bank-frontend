@@ -3,19 +3,18 @@ import { useNavigate } from "react-router-dom";
 import BackBtn from "../../container/BackBtn";
 import Button from "../../container/Button";
 import Input from "../../container/Input";
-import { ErrorObject } from "../../types/ErrorObject";
 import { REG_EXP } from "../../shared/RegExp";
 import "./index.css";
 import { useAuth } from "../../types/AuthContext";
 import DOMAIN from "../../shared/Domain";
 const Recovery = () => {
   const [email, setEmail] = useState<string>("");
+
   const [alert, setAlert] = useState<string>("");
+
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [emailErr, setEmailErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
+
+  const [emailErr, setEmailErr] = useState<string | null>(null);
 
   const { dispatch } = useAuth();
 
@@ -32,13 +31,10 @@ const Recovery = () => {
   const navigation = useNavigate();
 
   const handleSubmit = async () => {
-    setEmailErr({
-      result: checkEmailValidity,
-      message: checkEmailValidity ? "" : "Enter proper email",
-    });
+    setEmailErr(checkEmailValidity ? null : "Enter proper email");
 
     try {
-      if (emailErr.result) {
+      if (emailErr) {
         const res = await fetch(`${DOMAIN}/recovery`, {
           method: "POST",
           headers: {
@@ -51,10 +47,7 @@ const Recovery = () => {
         if (res.ok) {
           dispatch({ type: "LOGIN", email: email });
 
-          setEmailErr({
-            result: true,
-            message: "",
-          });
+          setEmailErr(null);
 
           navigation("/recovery-confirm");
         } else {
@@ -84,20 +77,22 @@ const Recovery = () => {
           <p className="heading__text">Choose a recovery method</p>
         </div>
 
-        <Input
-          type="email"
-          name="Email"
-          value={email}
-          setValue={setEmail}
-          error={emailErr}
-        />
+        <form className="container">
+          <Input
+            type="email"
+            name="Email"
+            value={email}
+            setValue={setEmail}
+            error={emailErr}
+          />
 
-        <Button
-          text="Send code"
-          type="submit"
-          disabled={isDisabled}
-          action={() => handleSubmit()}
-        />
+          <Button
+            text="Send code"
+            type="submit"
+            disabled={isDisabled}
+            action={() => handleSubmit()}
+          />
+        </form>
 
         {!!alert && (
           <div className="alert">

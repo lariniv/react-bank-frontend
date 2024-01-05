@@ -1,7 +1,7 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../../types/AuthContext";
 
-const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   const { state } = useAuth();
 
   return state.token && state.user.isConfirm ? (

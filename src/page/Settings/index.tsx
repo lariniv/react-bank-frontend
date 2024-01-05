@@ -1,53 +1,67 @@
 import BackBtn from "../../container/BackBtn";
 import Input from "../../container/Input";
 import { useState, useMemo, useEffect } from "react";
-import { ErrorObject } from "../../types/ErrorObject";
 import Button from "../../container/Button";
 import "./index.css";
 import { useAuth } from "../../types/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { REG_EXP } from "../../shared/RegExp";
 import DOMAIN from "../../shared/Domain";
+
 const Settings = () => {
-  const [email, setEmail] = useState<string>("");
-  const [emailPassword, setEmailPassword] = useState<string>("");
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
+  const [changeEmailForm, setChangeEmailForm] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
+
+  const [changePasswordForm, setChangePasswordForm] = useState<{
+    oldPassword: string;
+    newPassword: string;
+  }>({
+    oldPassword: "",
+    newPassword: "",
+  });
+
+  const { state, dispatch } = useAuth();
+  const navigate = useNavigate();
+
   const [isDisabledEmail, setIsDisabledEmail] = useState<boolean>(false);
   const [isDisabledPasswordd, setIsDisabledPassword] = useState<boolean>(false);
 
-  const [emailErr, setEmailErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
+  const [changeEmailFormError, setChangeEmailFormError] = useState<{
+    emailError: string | null;
+    passwordError: string | null;
+  }>({
+    emailError: null,
+    passwordError: null,
   });
-  const [emailPasswordErr, setEmailPasswordErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
-  const [oldPasswordErr, setOldPasswordErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
-  const [newPasswordErr, setNewPasswordErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
+
+  const [changePasswordFormError, setChangePasswordFormError] = useState<{
+    oldPasswordError: string | null;
+    newPasswordError: string | null;
+  }>({
+    oldPasswordError: null,
+    newPasswordError: null,
   });
 
   const checkEmailValidity = useMemo(() => {
-    return REG_EXP.EMAIL.test(email);
-  }, [email]);
+    return REG_EXP.EMAIL.test(changeEmailForm.email);
+  }, [changeEmailForm.email]);
 
   const checkEmailPasswordValidity = useMemo(() => {
-    return REG_EXP.PASSWORD.test(emailPassword);
-  }, [emailPassword]);
+    return REG_EXP.PASSWORD.test(changeEmailForm.password);
+  }, [changeEmailForm.password]);
 
   const checkNewPasswordValidity = useMemo(() => {
-    return REG_EXP.PASSWORD.test(newPassword);
-  }, [newPassword]);
+    return REG_EXP.PASSWORD.test(changePasswordForm.newPassword);
+  }, [changePasswordForm.newPassword]);
 
   const checkOldPasswordValidity = useMemo(() => {
-    return REG_EXP.PASSWORD.test(oldPassword);
-  }, [oldPassword]);
+    return REG_EXP.PASSWORD.test(changePasswordForm.oldPassword);
+  }, [changePasswordForm.oldPassword]);
 
   useEffect(() => {
     if (checkEmailPasswordValidity || checkEmailValidity) {
@@ -63,26 +77,30 @@ const Settings = () => {
     checkOldPasswordValidity,
   ]);
 
-  const { state, dispatch } = useAuth();
-  const navigate = useNavigate();
-
   const handleSubmitEmail = async () => {
-    setEmailErr({
-      result: checkEmailValidity,
-      message: checkEmailValidity ? "" : "Enter proper email",
-    });
+    const { email, password } = changeEmailForm;
 
-    if (emailPassword.length < 8) {
-      setEmailPasswordErr({ result: false, message: "Password is too short" });
+    setChangeEmailFormError((prev) => ({
+      ...prev,
+      emailError: checkEmailValidity ? null : "Enter proper email",
+    }));
+
+    if (password.length < 8) {
+      setChangeEmailFormError((prev) => ({
+        ...prev,
+        passwordError: "Password is too short",
+      }));
     } else {
-      setEmailPasswordErr({
-        result: checkEmailPasswordValidity,
-        message: checkEmailPasswordValidity ? "" : "Password is too weak",
-      });
+      setChangeEmailFormError((prev) => ({
+        ...prev,
+        passwordError: checkEmailPasswordValidity
+          ? null
+          : "Password is too weak",
+      }));
     }
     try {
-      if (emailPasswordErr.result && emailErr.result) {
-        if (emailPassword === state.user.password) {
+      if (email && password) {
+        if (password === state.user.password) {
           const res = await fetch(`${DOMAIN}/settings-email`, {
             method: "POST",
             headers: {
@@ -98,29 +116,19 @@ const Settings = () => {
 
           if (res.ok) {
             dispatch({ type: "LOGIN", email: data.email });
-            setEmailErr({
-              result: true,
-              message: "",
-            });
+            setChangeEmailFormError({ emailError: null, passwordError: null });
 
-            setEmailPasswordErr({
-              result: true,
-              message: "",
-            });
-
-            setEmail("");
-
-            setEmailPassword("");
+            setChangeEmailForm({ email: "", password: "" });
 
             setIsDisabledEmail(false);
           } else {
             setIsDisabledEmail(true);
           }
         } else {
-          setEmailPasswordErr({
-            result: false,
-            message: "Enter correct password",
-          });
+          setChangeEmailFormError((prev) => ({
+            ...prev,
+            passwordError: "Enter correct password",
+          }));
           setIsDisabledEmail(true);
         }
       } else {
@@ -132,16 +140,25 @@ const Settings = () => {
   };
 
   const handleSubmitPassword = async () => {
+    const { newPassword, oldPassword } = changePasswordForm;
     if (newPassword.length < 8) {
-      setNewPasswordErr({ result: false, message: "Password is too short" });
+      setChangePasswordFormError((prev) => ({
+        ...prev,
+        newPasswordError: "Password is too weak",
+      }));
     } else {
-      setNewPasswordErr({
-        result: checkNewPasswordValidity,
-        message: checkNewPasswordValidity ? "" : "Password is too weak",
-      });
+      setChangePasswordFormError((prev) => ({
+        ...prev,
+        newPasswordError: checkNewPasswordValidity
+          ? null
+          : "Password is too weak",
+      }));
     }
     try {
-      if (newPasswordErr.result && oldPasswordErr.result) {
+      if (
+        !changePasswordFormError.newPasswordError &&
+        !changePasswordFormError.oldPasswordError
+      ) {
         if (oldPassword === state.user.password) {
           const res = await fetch(`${DOMAIN}/settings-password`, {
             method: "POST",
@@ -158,33 +175,30 @@ const Settings = () => {
 
           if (res.ok) {
             dispatch({ type: "LOGIN", password: data.password });
-            setOldPasswordErr({
-              result: true,
-              message: "",
+            setChangePasswordFormError({
+              oldPasswordError: null,
+              newPasswordError: null,
             });
 
-            setNewPasswordErr({
-              result: true,
-              message: "",
+            setChangePasswordForm({
+              newPassword: "",
+              oldPassword: "",
             });
-
-            setNewPassword("");
-
-            setOldPassword("");
 
             setIsDisabledPassword(false);
           } else {
-            setNewPasswordErr({
-              result: false,
-              message: data.message,
-            });
+            setChangePasswordFormError((prev) => ({
+              ...prev,
+              newPasswordError: data.message,
+            }));
             setIsDisabledPassword(true);
           }
         } else {
-          setOldPasswordErr({
-            result: false,
-            message: "Enter correct password",
-          });
+          setChangePasswordFormError((prev) => ({
+            ...prev,
+            oldPasswordError: "Enter correct password",
+          }));
+
           setIsDisabledEmail(true);
         }
       } else {
@@ -211,31 +225,36 @@ const Settings = () => {
       <main className="main">
         <div className="container">
           <h2 className="settings-heading__title">Change email</h2>
+          <form className="container">
+            <Input
+              type="email"
+              name="Email"
+              value={changeEmailForm.email}
+              setValue={(newValue) =>
+                setChangeEmailForm((prev) => ({ ...prev, email: newValue }))
+              }
+              error={changeEmailFormError.emailError}
+            />
 
-          <Input
-            type="email"
-            name="Email"
-            value={email}
-            setValue={setEmail}
-            error={emailErr}
-          />
+            <Input
+              type="password"
+              name="Password"
+              isPassword
+              value={changeEmailForm.password}
+              setValue={(newValue) =>
+                setChangeEmailForm((prev) => ({ ...prev, password: newValue }))
+              }
+              error={changeEmailFormError.passwordError}
+            />
 
-          <Input
-            type="password"
-            name="Password"
-            isPassword
-            value={emailPassword}
-            setValue={setEmailPassword}
-            error={emailPasswordErr}
-          />
-
-          <Button
-            mod="outline"
-            text="Save email"
-            type="submit"
-            disabled={isDisabledEmail}
-            action={() => handleSubmitEmail()}
-          />
+            <Button
+              mod="outline"
+              text="Save email"
+              type="submit"
+              disabled={isDisabledEmail}
+              action={() => handleSubmitEmail()}
+            />
+          </form>
 
           <div className="splitter" />
         </div>
@@ -243,31 +262,43 @@ const Settings = () => {
         <div className="container">
           <h2 className="settings-heading__title">Change password</h2>
 
-          <Input
-            type="password"
-            name="Password"
-            isPassword
-            value={oldPassword}
-            setValue={setOldPassword}
-            error={oldPasswordErr}
-          />
+          <form className="container">
+            <Input
+              type="password"
+              name="Password"
+              isPassword
+              value={changePasswordForm.oldPassword}
+              setValue={(newValue) =>
+                setChangePasswordForm((prev) => ({
+                  ...prev,
+                  oldPassword: newValue,
+                }))
+              }
+              error={changePasswordFormError.oldPasswordError}
+            />
 
-          <Input
-            type="password"
-            name="New password"
-            isPassword
-            value={newPassword}
-            setValue={setNewPassword}
-            error={newPasswordErr}
-          />
+            <Input
+              type="password"
+              name="New password"
+              isPassword
+              value={changePasswordForm.newPassword}
+              setValue={(newValue) =>
+                setChangePasswordForm((prev) => ({
+                  ...prev,
+                  newPassword: newValue,
+                }))
+              }
+              error={changePasswordFormError.newPasswordError}
+            />
 
-          <Button
-            text="Save submit"
-            type="submit"
-            mod="outline"
-            disabled={isDisabledPasswordd}
-            action={() => handleSubmitPassword()}
-          />
+            <Button
+              text="Save submit"
+              type="submit"
+              mod="outline"
+              disabled={isDisabledPasswordd}
+              action={() => handleSubmitPassword()}
+            />
+          </form>
 
           <div className="splitter" />
         </div>

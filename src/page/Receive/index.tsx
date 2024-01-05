@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import BackBtn from "../../container/BackBtn";
 import Input from "../../container/Input";
-import { ErrorObject } from "../../types/ErrorObject";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../types/AuthContext";
@@ -14,10 +13,7 @@ const Receive = () => {
 
   const { state } = useAuth();
 
-  const [sumErr, setSumErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
+  const [sumErr, setSumErr] = useState<string | null>(null);
 
   const checkSumValidity = useMemo(() => {
     if (sum.length !== 0) {
@@ -48,10 +44,7 @@ const Receive = () => {
   }, [sum]);
 
   const handleStripe = async () => {
-    setSumErr({
-      result: checkSumValidity,
-      message: checkSumValidity ? "" : "Enter proper sum",
-    });
+    setSumErr(checkSumValidity ? null : "Enter proper sum");
 
     try {
       const res = await fetch(`${DOMAIN}/receive`, {
@@ -69,7 +62,7 @@ const Receive = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setSumErr({ result: false, message: "" });
+        setSumErr(null);
         setAlert("");
         navigation("/balance");
       } else {
@@ -82,10 +75,7 @@ const Receive = () => {
   };
 
   const handleCoinbase = async () => {
-    setSumErr({
-      result: checkSumValidity,
-      message: checkSumValidity ? "" : "Enter proper sum",
-    });
+    setSumErr(checkSumValidity ? null : "Enter proper sum");
 
     try {
       const res = await fetch(`${DOMAIN}/receive`, {
@@ -103,7 +93,7 @@ const Receive = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setSumErr({ result: false, message: "" });
+        setSumErr(null);
         setAlert("");
         navigation("/balance");
       } else {

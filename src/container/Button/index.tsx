@@ -1,14 +1,21 @@
 import { Link } from "react-router-dom";
 import "./index.css";
 
-const Button: React.FC<{
+const Button = ({
+  text,
+  mod,
+  href,
+  disabled,
+  type,
+  action,
+}: {
   text: string;
   mod?: string;
   href?: string;
   disabled?: boolean;
   type: "nav" | "submit";
   action?: () => void;
-}> = ({ text, mod, href, type, action, disabled }) => {
+}) => {
   switch (type) {
     case "nav":
       return href ? (

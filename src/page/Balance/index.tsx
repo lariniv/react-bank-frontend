@@ -8,7 +8,7 @@ import "./index.css";
 
 const Balance = () => {
   const { state } = useAuth();
-  const [balance, setBalance] = useState<number>(10.0);
+  const [balance, setBalance] = useState<number>(0.0);
   const [transactions, setTransactions] = useState<Array<TransactionsObject>>(
     []
   );

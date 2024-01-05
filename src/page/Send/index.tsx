@@ -1,37 +1,41 @@
 import { useState, useMemo, useEffect } from "react";
 import BackBtn from "../../container/BackBtn";
 import Input from "../../container/Input";
-import { ErrorObject } from "../../types/ErrorObject";
 import { REG_EXP } from "../../shared/RegExp";
 import "./index.css";
 import Button from "../../container/Button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../types/AuthContext";
 import DOMAIN from "../../shared/Domain";
+
 const Send = () => {
-  const [email, setEmail] = useState<string>("");
-  const [sum, setSum] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [alert, setAlert] = useState<string>("");
+
+  const [formData, setFormData] = useState({
+    email: "",
+    sum: "",
+  });
+
+  const [formError, setFormError] = useState<{
+    emailError: string | null;
+    sumError: string | null;
+  }>({
+    emailError: "",
+    sumError: "",
+  });
 
   const navigation = useNavigate();
 
   const { state } = useAuth();
 
-  const [emailErr, setEmailErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
-
-  const [sumErr, setSumErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
   const checkEmailValidity = useMemo(() => {
-    return REG_EXP.EMAIL.test(email);
-  }, [email]);
+    return REG_EXP.EMAIL.test(formData.email);
+  }, [formData.email]);
 
   const checkSumValidity = useMemo(() => {
+    const sum = formData.sum;
+
     if (sum.length !== 0) {
       if (sum[0] === "$") {
         let formattedSum = sum.slice(1);
@@ -57,7 +61,7 @@ const Send = () => {
     } else {
       return false;
     }
-  }, [sum]);
+  }, [formData.sum]);
 
   useEffect(() => {
     if (checkSumValidity || checkEmailValidity) {
@@ -66,26 +70,21 @@ const Send = () => {
   }, [checkSumValidity, checkEmailValidity]);
 
   const handleSubmit = async () => {
-    setEmailErr({
-      result: checkEmailValidity,
-      message: checkEmailValidity ? "" : "Enter proper email",
-    });
-
-    setSumErr({
-      result: checkSumValidity,
-      message: checkSumValidity ? "" : "Enter proper sum",
+    setFormError({
+      sumError: checkSumValidity ? null : "Enter proper sum",
+      emailError: checkEmailValidity ? null : "Enter proper email",
     });
 
     try {
-      if (emailErr.result && sumErr.result) {
+      if (!formError.emailError && !formError.sumError) {
         const res = await fetch(`${DOMAIN}/send`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            email: email,
-            sum: Number(sum),
+            email: formData.email,
+            sum: Number(formData.sum),
             token: state.token,
           }),
         });
@@ -93,14 +92,9 @@ const Send = () => {
         const data = await res.json();
 
         if (res.ok) {
-          setSumErr({
-            result: true,
-            message: "",
-          });
-
-          setEmailErr({
-            result: true,
-            message: "",
+          setFormError({
+            sumError: null,
+            emailError: null,
           });
 
           setAlert("");
@@ -126,28 +120,34 @@ const Send = () => {
         <div className="settings-header__item">Send</div>
       </header>
 
-      <Input
-        type="email"
-        name="Email"
-        value={email}
-        setValue={setEmail}
-        error={emailErr}
-      />
+      <form className="container">
+        <Input
+          type="email"
+          name="Email"
+          value={formData.email}
+          setValue={(newValue) =>
+            setFormData((prev) => ({ ...prev, email: newValue }))
+          }
+          error={formError.emailError}
+        />
 
-      <Input
-        type="number"
-        name="Sum"
-        value={sum}
-        setValue={setSum}
-        error={sumErr}
-      />
+        <Input
+          type="number"
+          name="Sum"
+          value={formData.sum}
+          setValue={(newValue) =>
+            setFormData((prev) => ({ ...prev, sum: newValue }))
+          }
+          error={formError.sumError}
+        />
 
-      <Button
-        text="Send"
-        type="submit"
-        disabled={isDisabled}
-        action={() => handleSubmit()}
-      />
+        <Button
+          text="Send"
+          type="submit"
+          disabled={isDisabled}
+          action={() => handleSubmit()}
+        />
+      </form>
 
       {!!alert && (
         <div className="alert">

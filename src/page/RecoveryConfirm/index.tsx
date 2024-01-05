@@ -3,39 +3,39 @@ import { useNavigate } from "react-router-dom";
 import BackBtn from "../../container/BackBtn";
 import Button from "../../container/Button";
 import Input from "../../container/Input";
-import { ErrorObject } from "../../types/ErrorObject";
 import { REG_EXP } from "../../shared/RegExp";
 import "./index.css";
 import { useAuth } from "../../types/AuthContext";
 import DOMAIN from "../../shared/Domain";
 const RecoveryConfirm = () => {
-  const [code, setCode] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [formData, setFormData] = useState({
+    code: "",
+    password: "",
+  });
+
+  const [formError, setFormError] = useState<{
+    codeError: string | null;
+    passwordError: string | null;
+  }>({
+    codeError: "",
+    passwordError: "",
+  });
+
   const [alert, setAlert] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-
-  const [codeErr, setCodeErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
-
-  const [passwordErr, setPasswordErr] = useState<ErrorObject>({
-    result: true,
-    message: "",
-  });
 
   const { state, dispatch } = useAuth();
 
   const checkPasswordValidity = useMemo(() => {
-    return REG_EXP.PASSWORD.test(password);
-  }, [password]);
+    return REG_EXP.PASSWORD.test(formData.password);
+  }, [formData.password]);
 
   const checkCodeValidity = useMemo(() => {
-    if (code.length < 6) {
+    if (formData.code.length < 6) {
       return false;
     }
     return true;
-  }, [code]);
+  }, [formData.code]);
 
   useEffect(() => {
     if (checkPasswordValidity || checkCodeValidity) {
@@ -46,19 +46,22 @@ const RecoveryConfirm = () => {
   const navigation = useNavigate();
 
   const handleSubmit = async () => {
-    if (password.length < 8) {
-      setPasswordErr({ result: false, message: "Password is too short" });
+    if (formData.password.length < 8) {
+      setFormError((prev) => ({
+        ...prev,
+        passwordError: "Password is too short",
+      }));
     } else {
-      setPasswordErr({
-        result: checkPasswordValidity,
-        message: checkPasswordValidity ? "" : "Password is too weak",
-      });
+      setFormError((prev) => ({
+        ...prev,
+        passwordError: checkPasswordValidity ? null : "Password is too weak",
+      }));
     }
 
-    setCodeErr({
-      result: checkCodeValidity,
-      message: checkCodeValidity ? "" : "Enter valid code",
-    });
+    setFormError((prev) => ({
+      ...prev,
+      codeError: checkCodeValidity ? null : "Enter valid code",
+    }));
 
     try {
       if (checkCodeValidity && checkPasswordValidity) {
@@ -68,24 +71,21 @@ const RecoveryConfirm = () => {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            code: code,
-            newPassword: password,
+            code: formData.code,
+            newPassword: formData.password,
             email: state.user.email,
           }),
         });
 
         const data = await res.json();
-        if (res.ok) {
-          setPasswordErr({
-            result: true,
-            message: "",
-          });
-          setAlert("");
 
-          setCodeErr({
-            result: true,
-            message: "",
+        if (res.ok) {
+          setFormError({
+            codeError: null,
+            passwordError: null,
           });
+
+          setAlert("");
 
           dispatch({ type: "LOGIN", ...data.user });
 
@@ -119,29 +119,35 @@ const RecoveryConfirm = () => {
           <p className="heading__text">Choose a recovery method</p>
         </div>
 
-        <Input
-          type="code"
-          name="Code"
-          value={code}
-          setValue={setCode}
-          error={codeErr}
-        />
+        <form className="container">
+          <Input
+            type="code"
+            name="Code"
+            value={formData.code}
+            setValue={(newValue: string) =>
+              setFormData((prev) => ({ ...prev, code: newValue }))
+            }
+            error={formError.codeError}
+          />
 
-        <Input
-          type="password"
-          name="Password"
-          isPassword
-          value={password}
-          setValue={setPassword}
-          error={passwordErr}
-        />
+          <Input
+            type="password"
+            name="Password"
+            isPassword
+            value={formData.password}
+            setValue={(newValue: string) =>
+              setFormData((prev) => ({ ...prev, password: newValue }))
+            }
+            error={formError.passwordError}
+          />
 
-        <Button
-          text="Send code"
-          type="submit"
-          disabled={isDisabled}
-          action={() => handleSubmit()}
-        />
+          <Button
+            text="Send code"
+            type="submit"
+            disabled={isDisabled}
+            action={() => handleSubmit()}
+          />
+        </form>
 
         {!!alert && (
           <div className="alert">

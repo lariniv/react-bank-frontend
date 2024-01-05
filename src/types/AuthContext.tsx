@@ -66,9 +66,7 @@ const AuthContext = createContext<
   | undefined
 >(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, {
     token: null,
     user: {
